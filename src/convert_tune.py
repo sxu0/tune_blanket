@@ -21,14 +21,14 @@ class BlanketDesign():
 
 
 def compose_blanket(score: TrebleScore):
+    # visual magic!
     pitches = score.pitches
     durations = score.durations
-    # visual magic!
+    width = 10
+    length_multiplier = 10
+    rest_pitch = np.min(pitches) - (score.pitch_range // 5 + 2)
+    note_divider = np.full((width, 1), rest_pitch)
     for part in range(len(pitches)):
-        width = 10
-        length_multiplier = 10
-        rest_pitch = np.min(pitches) - score.pitch_range
-        note_divider = np.full((width, 1), rest_pitch)
         part_blanket_sections = []
         part_pitches = pitches[part, :]
         part_durations = durations[part, :]
@@ -49,12 +49,9 @@ def compose_blanket(score: TrebleScore):
             plt.figure()  # figsize=(,)
             plt.contourf(part_blanket, score.pitch_range)
             plt.tick_params(
-                axis='both',        # both x & y axes
-                which='both',       # both major & minor ticks
-                left=False,         # no ticks along left edge
-                bottom=False,       # no ticks along bottom edge
-                labelleft=False,    # no labels along left edge
-                labelbottom=False   # no labels along bottom edge
+                axis='both', which='both',
+                left=False, bottom=False,
+                labelleft=False, labelbottom=False
             )
             plt.show()
 
