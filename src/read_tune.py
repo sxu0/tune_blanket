@@ -6,17 +6,19 @@ limitations (for now): partwise (as opposed to timewise),
 treble clef, single time signature, single key signature.
 
 sources
----------
-* musicxml file conventions tutorial:
+-------
+* musicxml file conventions:
 https://www.w3.org/2021/06/musicxml40/tutorial/hello-world/
-* built-in python module for reading xml files:
+* built-in python module for xml files:
 https://docs.python.org/3/library/xml.etree.elementtree.html
 """
 
-import warnings
 
-from pathlib import Path
+import warnings
 from xml.etree import ElementTree
+
+import numpy as np
+from pathlib import Path
 
 
 class TrebleScore:
@@ -63,6 +65,7 @@ class TrebleScore:
 
     def __init__(self, musicxml_path):
         self.pitches, self.durations = [], []
+        self.no_parts = 0
         # read xml file
         tree = ElementTree.parse(musicxml_path)
         root = tree.getroot()
@@ -71,6 +74,8 @@ class TrebleScore:
         elif root.tag == "score-timewise":
             warnings.warn("Timewise scores are not yet supported.")
         for part in root.iter("part"):
+            self.no_parts += 1
+            part_pitches, part_durations = [], []
             for measure in part.iter("measure"):
                 for attributes in measure.iter("attributes"):
                     for divisions in attributes.iter("divisions"):
@@ -94,46 +99,53 @@ class TrebleScore:
                             alter = 0
                         octave = int(pitch.find("octave").text)
                         note_pitch = self.Pitch(step, alter, octave)
-                        self.pitches.append(note_pitch.num)
+                        part_pitches.append(note_pitch.num)
                         duration = int(note.find("duration").text)
-                        self.durations.append(duration)
+                        part_durations.append(duration)
                     for rest in note.iter("rest"):
-                        self.pitches.append(9999)
+                        part_pitches.append(9999)
                         duration = int(note.find("duration").text)
-                        self.durations.append(duration)
+                        part_durations.append(duration)
+            self.pitches.append(part_pitches)
+            self.durations.append(part_durations)
+        self.pitches = np.array(self.pitches)
+        self.durations = np.array(self.durations)
         # crop continuous rests at end of score
         (self.pitches, self.durations) = self.groom_tail()
         # verify same number of pitches and durations have been recorded
-        if len(self.pitches) != len(self.durations):
+        if np.size(self.pitches) != np.size(self.durations):
             warnings.warn("Unequal numbers of pitches and durations recorded!")
-            print("\t({0} note pitches/rests recorded, "\
-                "{1} note/rest durations recorded)".format(
-                    len(self.pitches), len(self.durations)
+            print("\t({0} note pitches/rests recorded & "\
+                "{1} note/rest durations recorded across all parts)".format(
+                    np.size(self.pitches), np.size(self.durations)
                 )
             )
         # calculate pitch range in number of semitones
         self.pitch_range = self.find_pitch_range()
 
-
     def find_pitch_range(self):
         # finds range of pitches in number of semitones
-        pitches_sans_rests = [sound for sound in self.pitches if sound != 9999]
-        pitch_range = max(pitches_sans_rests) - min(pitches_sans_rests)
+        pitches_sans_rests = self.pitches[self.pitches != 9999]
+        pitch_range = np.max(pitches_sans_rests) - np.min(pitches_sans_rests)
         return pitch_range
 
     def groom_tail(self):
         # deletes empty measures at end of score
-        tail_rests = 0
-        for i in range(len(self.pitches)-1, -1, -1):
-            if i == len(self.pitches) - 1:
-                if self.pitches[i] == 9999:
+        tail_rests_parts = []
+        for i in range(self.no_parts):
+            tail_rests = 0
+            for j in range(len(self.pitches[i])-1, -1, -1):
+                if j == len(self.pitches[i]) - 1:
+                    if self.pitches[i][j] == 9999:
+                        tail_rests += 1
+                elif self.pitches[i][j] == 9999 and self.pitches[i][j+1] == 9999:
                     tail_rests += 1
-            elif self.pitches[i] == 9999 and self.pitches[i+1] == 9999:
-                tail_rests += 1
-        if tail_rests == 0:
+            tail_rests_parts.append(tail_rests)
+        tail_length = min(tail_rests_parts)
+        if tail_length == 0:
             return self.pitches, self.durations
         else:
-            return self.pitches[:-tail_rests], self.durations[:-tail_rests]
+            return self.pitches[:, :-tail_length], self.durations[:, :-tail_length]
 
 
 
