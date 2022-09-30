@@ -1,6 +1,9 @@
 # ignore output directory
 output/
 
+# ignore scratch file
+scratch.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
