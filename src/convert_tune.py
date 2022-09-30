@@ -27,7 +27,7 @@ def compose_blanket(score: TrebleScore):
     width = 10
     length_multiplier = 10
     rest_pitch = np.min(pitches) - (score.pitch_range // 5 + 2)
-    note_divider = np.full((width, 1), rest_pitch)
+    note_divider = np.full((width, 1), rest_pitch - score.pitch_range // 5)
     for part in range(len(pitches)):
         part_blanket_sections = []
         part_pitches = pitches[part, :]
@@ -47,7 +47,7 @@ def compose_blanket(score: TrebleScore):
         if True:
             # visualize part
             plt.figure()  # figsize=(,)
-            plt.contourf(part_blanket, score.pitch_range)
+            plt.contourf(part_blanket, int(score.pitch_range * 1.5))
             plt.tick_params(
                 axis='both', which='both',
                 left=False, bottom=False,
