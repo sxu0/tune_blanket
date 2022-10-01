@@ -25,7 +25,7 @@ def compose_blanket(score: TrebleScore, fig_name: str = ""):
     # visual magic!
     pitches = score.pitches
     durations = score.durations
-    width = 10
+    width = 2
     length_multiplier = 10
     divider_thickness = 2
     # turns out divider_thickness is an important parameter
