@@ -3,7 +3,7 @@ read_tune.py
 ------------
 reads melody from musicxml file and returns pitch & rhythm info.
 limitations (for now): partwise (as opposed to timewise),
-treble clef, single time signature, single key signature.
+treble clef, single tempo/time signature.
 
 sources
 -------
@@ -99,13 +99,21 @@ class TrebleScore:
                             alter = 0
                         octave = int(pitch.find("octave").text)
                         note_pitch = self.Pitch(step, alter, octave)
-                        part_pitches.append(note_pitch.num)
                         duration = int(note.find("duration").text)
+                        if note.find("tie") is None:
+                            pass
+                        elif note.find("tie").attrib["type"] == "stop":
+                            part_durations[-1] += duration
+                            continue
+                        part_pitches.append(note_pitch.num)
                         part_durations.append(duration)
                     for rest in note.iter("rest"):
-                        part_pitches.append(9999)
                         duration = int(note.find("duration").text)
-                        part_durations.append(duration)
+                        if len(part_pitches) > 0 and part_pitches[-1] == 9999:
+                            part_durations[-1] += duration
+                        else:
+                            part_pitches.append(9999)
+                            part_durations.append(duration)
             self.pitches.append(part_pitches)
             self.durations.append(part_durations)
         self.pitches = np.array(self.pitches)
@@ -152,11 +160,12 @@ class TrebleScore:
 
 if __name__ == "__main__":
     tune_dir = Path(__file__).resolve().parent.parent.joinpath('tune')
-    tune_path = tune_dir.joinpath('vivaldi_spring_main_theme.musicxml')
+    # tune_path = tune_dir.joinpath('vivaldi_spring_main_theme.musicxml')
+    tune_path = tune_dir.joinpath('true_romance_verse.musicxml')
 
-    spring = TrebleScore(tune_path)
+    melody = TrebleScore(tune_path)
     print("\npitches:")
-    print(spring.pitches)
+    print(melody.pitches)
     print("\ndurations:")
-    print(spring.durations)
-    print("\npitch range:\t" + str(spring.pitch_range) + "\n")
+    print(melody.durations)
+    print("\npitch range:\t" + str(melody.pitch_range) + "\n")
