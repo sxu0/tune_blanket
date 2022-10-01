@@ -15,6 +15,7 @@ class BlanketDesign():
     # colour scheme
     # rest colour
     # dimensions
+    # length multiplier & divider thickness (!)
     # etc
     pass
     # (compose_blanket does not currently utilize this)
@@ -26,8 +27,17 @@ def compose_blanket(score: TrebleScore, fig_name: str = ""):
     durations = score.durations
     width = 10
     length_multiplier = 10
+    divider_thickness = 2
+    # turns out divider_thickness is an important parameter
+    # (or rather, divider_thickness relative to length_multiplier)
+    # vivaldi theme looks much better with it set to 1
+    # whereas true romance verse looks much better with it set to 2
+    # despite the 2 having similar {note + rest} count
+    # sooo remember to include it in BlanketDesign class!
     rest_pitch = np.min(pitches) - (score.pitch_range // 5 + 2)
-    note_divider = np.full((width, 1), rest_pitch - 2 * score.pitch_range // 5)
+    note_divider = np.full(
+        (width, divider_thickness), rest_pitch - 2 * score.pitch_range // 5
+    )
     # output directory
     out_path = Path(__file__).resolve().parent.parent.joinpath('output')
     out_path.mkdir(exist_ok=True)
@@ -75,4 +85,4 @@ if __name__ == "__main__":
     # tune_path = tune_dir.joinpath('vivaldi_spring_main_theme.musicxml')
     tune_path = tune_dir.joinpath('true_romance_verse.musicxml')
     melody = TrebleScore(tune_path)
-    compose_blanket(melody, "true_romance_verse.png")
+    compose_blanket(melody)
