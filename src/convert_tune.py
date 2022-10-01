@@ -11,9 +11,6 @@ import numpy as np
 from read_tune import TrebleScore
 
 
-debug_switch = False
-
-
 class BlanketDesign():
     # colour scheme
     # rest colour
@@ -23,7 +20,7 @@ class BlanketDesign():
     # (compose_blanket does not currently utilize this)
 
 
-def compose_blanket(score: TrebleScore):
+def compose_blanket(score: TrebleScore, fig_name: str = ""):
     # visual magic!
     pitches = score.pitches
     durations = score.durations
@@ -31,7 +28,10 @@ def compose_blanket(score: TrebleScore):
     length_multiplier = 10
     rest_pitch = np.min(pitches) - (score.pitch_range // 5 + 2)
     note_divider = np.full((width, 1), rest_pitch - 2 * score.pitch_range // 5)
-
+    # output directory
+    out_path = Path(__file__).resolve().parent.parent.joinpath('output')
+    out_path.mkdir(exist_ok=True)
+    # tile pitches according to durations
     for part in range(len(pitches)):
         part_blanket_sections = []
         part_pitches = pitches[part, :]
@@ -48,16 +48,15 @@ def compose_blanket(score: TrebleScore):
             part_blanket_sections.append(note_divider)
         del part_blanket_sections[-1]
         part_blanket = np.concatenate(part_blanket_sections, axis=1)
+        # debug mode
         if debug_switch:
-            out_path = Path(__file__).resolve().parent.parent.joinpath('output')
-            out_path.mkdir(exist_ok=True)
-            with open(out_path.joinpath('test_tune_blanket.txt'), 'w') as file_out:
+            with open(out_path.joinpath('tune_blanket_part.txt'), 'w') as file_out:
                 for i in range(len(part_blanket)):
                     for j in range(len(part_blanket[i])):
                         file_out.write(str(part_blanket[i, j]) + "  ")
                     file_out.write("\n")
+        # visualize part
         if True:
-            # visualize part
             plt.figure()  # figsize=(,)
             plt.contourf(part_blanket, int(score.pitch_range * 1.5))
             plt.tick_params(
@@ -65,12 +64,15 @@ def compose_blanket(score: TrebleScore):
                 left=False, bottom=False,
                 labelleft=False, labelbottom=False
             )
+            if fig_name != "":
+                plt.savefig(out_path.joinpath(fig_name), dpi=1024)
             plt.show()
 
 
 if __name__ == "__main__":
+    debug_switch = False
     tune_dir = Path(__file__).resolve().parent.parent.joinpath('tune')
     # tune_path = tune_dir.joinpath('vivaldi_spring_main_theme.musicxml')
     tune_path = tune_dir.joinpath('true_romance_verse.musicxml')
     melody = TrebleScore(tune_path)
-    compose_blanket(melody)
+    compose_blanket(melody, "true_romance_verse.png")
