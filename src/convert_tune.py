@@ -27,7 +27,7 @@ def compose_blanket(score: TrebleScore, fig_name: str = ""):
     durations = score.durations
     width = 2
     length_multiplier = 10
-    divider_thickness = 2
+    divider_thickness = 1
     # turns out divider_thickness is an important parameter
     # (or rather, divider_thickness relative to length_multiplier)
     # vivaldi theme looks much better with it set to 1
@@ -68,7 +68,7 @@ def compose_blanket(score: TrebleScore, fig_name: str = ""):
         # visualize part
         if True:
             plt.figure()  # figsize=(,)
-            plt.contourf(part_blanket, int(score.pitch_range * 1.5))
+            plt.contourf(part_blanket, int(score.pitch_range * 1.5))  # cmap=""
             plt.tick_params(
                 axis='both', which='both',
                 left=False, bottom=False,
@@ -83,6 +83,7 @@ if __name__ == "__main__":
     debug_switch = False
     tune_dir = Path(__file__).resolve().parent.parent.joinpath('tune')
     # tune_path = tune_dir.joinpath('vivaldi_spring_main_theme.musicxml')
-    tune_path = tune_dir.joinpath('true_romance_verse.musicxml')
+    # tune_path = tune_dir.joinpath('true_romance_verse.musicxml')
+    tune_path = tune_dir.joinpath('dvorak_9_english_horn_solo.musicxml')
     melody = TrebleScore(tune_path)
     compose_blanket(melody)
