@@ -11,32 +11,37 @@ import numpy as np
 from read_tune import TrebleScore
 
 
-class BlanketDesign():
-    # colour scheme
-    # rest colour
-    # dimensions
-    # length multiplier & divider thickness (!)
-    # etc
-    pass
-    # (compose_blanket does not currently utilize this)
+class BlanketDesign:
+
+    def __init__(self):
+        # set defaults
+        self.shape_blanket()
+        self.colour_blanket()
+        self.save_blanket()
+
+    def shape_blanket(self, div_size=1, len_mult=10):
+        self.divider_thickness = div_size
+        self.length_multiplier = len_mult
+
+    def colour_blanket(self, colour_map='viridis', colour_mult=1.5):
+        self.colour_map = colour_map
+        self.colour_range_multiplier = colour_mult
+
+    def save_blanket(self, dims=(6, 4), res=360):
+        self.dimensions = dims
+        self.resolution = res
+
+    # yet to implement: custom rest colour
 
 
-def compose_blanket(score: TrebleScore, fig_name: str = ""):
+def compose_blanket(score: TrebleScore, design: BlanketDesign, fig_name: str = ""):
     # visual magic!
     pitches = score.pitches
     durations = score.durations
     width = 2
-    length_multiplier = 10
-    divider_thickness = 1
-    # turns out divider_thickness is an important parameter
-    # (or rather, divider_thickness relative to length_multiplier)
-    # vivaldi theme looks much better with it set to 1
-    # whereas true romance verse looks much better with it set to 2
-    # despite the 2 having similar {note + rest} count
-    # sooo remember to include it in BlanketDesign class!
     rest_pitch = np.min(pitches) - (score.pitch_range // 5 + 2)
     note_divider = np.full(
-        (width, divider_thickness), rest_pitch - 2 * score.pitch_range // 5
+        (width, design.divider_thickness), rest_pitch - 2 * score.pitch_range // 5
     )
     # output directory
     out_path = Path(__file__).resolve().parent.parent.joinpath('output')
@@ -52,7 +57,7 @@ def compose_blanket(score: TrebleScore, fig_name: str = ""):
             else:
                 pitch = rest_pitch
             blanket_section = np.full(
-                (width, part_durations[note] * length_multiplier), pitch
+                (width, part_durations[note] * design.length_multiplier), pitch
             )
             part_blanket_sections.append(blanket_section)
             part_blanket_sections.append(note_divider)
@@ -67,15 +72,19 @@ def compose_blanket(score: TrebleScore, fig_name: str = ""):
                     file_out.write("\n")
         # visualize part
         if True:
-            plt.figure()  # figsize=(,)
-            plt.contourf(part_blanket, int(score.pitch_range * 1.5))  # cmap=""
+            plt.figure(figsize=design.dimensions)
+            plt.contourf(
+                part_blanket,
+                int(score.pitch_range * design.colour_range_multiplier),
+                cmap=design.colour_map
+            )
             plt.tick_params(
                 axis='both', which='both',
                 left=False, bottom=False,
                 labelleft=False, labelbottom=False
             )
             if fig_name != "":
-                plt.savefig(out_path.joinpath(fig_name), dpi=1024)
+                plt.savefig(out_path.joinpath(fig_name), dpi=design.resolution)
             plt.show()
 
 
@@ -84,6 +93,9 @@ if __name__ == "__main__":
     tune_dir = Path(__file__).resolve().parent.parent.joinpath('tune')
     # tune_path = tune_dir.joinpath('vivaldi_spring_main_theme.musicxml')
     # tune_path = tune_dir.joinpath('true_romance_verse.musicxml')
-    tune_path = tune_dir.joinpath('dvorak_9_english_horn_solo.musicxml')
+    # tune_path = tune_dir.joinpath('dvorak_9_english_horn_solo.musicxml')
+    # tune_path = tune_dir.joinpath('bohemian_rhapsody_guitar_solo.musicxml')
+    tune_path = tune_dir.joinpath('twinkle_twinkle_little_star.musicxml')
     melody = TrebleScore(tune_path)
-    compose_blanket(melody)
+    pattern = BlanketDesign()
+    compose_blanket(melody, pattern, 'twinkle_twinkle_little_star.png')
