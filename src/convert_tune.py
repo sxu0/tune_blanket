@@ -98,4 +98,6 @@ if __name__ == "__main__":
     tune_path = tune_dir.joinpath('twinkle_twinkle_little_star.musicxml')
     melody = TrebleScore(tune_path)
     pattern = BlanketDesign()
-    compose_blanket(melody, pattern, 'twinkle_twinkle_little_star.png')
+    # fav colourmaps so far: 'viridis' (default), 'ocean', 'Purples'
+    # pattern.colour_blanket()
+    compose_blanket(melody, pattern, 'twinkle_twinkle_little_star2.png')
