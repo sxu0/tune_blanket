@@ -3,7 +3,7 @@ read_tune.py
 ------------
 reads melody from musicxml file and returns pitch & rhythm info.
 limitations (for now): partwise (as opposed to timewise),
-treble clef, single tempo/time signature.
+treble clef, single tempo/time signature, less common tuplets.
 
 sources
 -------
