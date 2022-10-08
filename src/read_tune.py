@@ -154,18 +154,3 @@ class TrebleScore:
             return self.pitches, self.durations
         else:
             return self.pitches[:, :-tail_length], self.durations[:, :-tail_length]
-
-
-
-
-if __name__ == "__main__":
-    tune_dir = Path(__file__).resolve().parent.parent.joinpath('tune')
-    # tune_path = tune_dir.joinpath('vivaldi_spring_main_theme.musicxml')
-    tune_path = tune_dir.joinpath('true_romance_verse.musicxml')
-
-    melody = TrebleScore(tune_path)
-    print("\npitches:")
-    print(melody.pitches)
-    print("\ndurations:")
-    print(melody.durations)
-    print("\npitch range:\t" + str(melody.pitch_range) + "\n")

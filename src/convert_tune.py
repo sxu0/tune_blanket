@@ -34,7 +34,9 @@ class BlanketDesign:
     # yet to implement: custom rest colour
 
 
-def compose_blanket(score: TrebleScore, design: BlanketDesign, fig_name: str = ""):
+def compose_blanket(
+    score: TrebleScore, design: BlanketDesign, fig_name: str = "", debug_switch=False
+):
     # visual magic!
     pitches = score.pitches
     durations = score.durations
@@ -86,18 +88,3 @@ def compose_blanket(score: TrebleScore, design: BlanketDesign, fig_name: str = "
             if fig_name != "":
                 plt.savefig(out_path.joinpath(fig_name), dpi=design.resolution)
             plt.show()
-
-
-if __name__ == "__main__":
-    debug_switch = False
-    tune_dir = Path(__file__).resolve().parent.parent.joinpath('tune')
-    # tune_path = tune_dir.joinpath('vivaldi_spring_main_theme.musicxml')
-    # tune_path = tune_dir.joinpath('true_romance_verse.musicxml')
-    # tune_path = tune_dir.joinpath('dvorak_9_english_horn_solo.musicxml')
-    # tune_path = tune_dir.joinpath('bohemian_rhapsody_guitar_solo.musicxml')
-    tune_path = tune_dir.joinpath('twinkle_twinkle_little_star.musicxml')
-    melody = TrebleScore(tune_path)
-    pattern = BlanketDesign()
-    # fav colourmaps so far: 'viridis' (default), 'ocean', 'Purples'
-    # pattern.colour_blanket()
-    compose_blanket(melody, pattern, 'twinkle_twinkle_little_star2.png')
