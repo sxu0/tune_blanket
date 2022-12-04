@@ -23,9 +23,10 @@ class BlanketDesign:
         self.divider_thickness = div_size
         self.length_multiplier = len_mult
 
-    def colour_blanket(self, colour_map='viridis', colour_mult=1.5):
+    def colour_blanket(self, colour_map='viridis', colour_mult=1.5, rests_above=0):
         self.colour_map = colour_map
         self.colour_range_multiplier = colour_mult
+        self.rests_above = rests_above
 
     def save_blanket(self, dims=(6, 4), res=360):
         self.dimensions = dims
@@ -39,8 +40,12 @@ def compose_blanket(
 ):
     # visual magic!
     width = 2
-    rest_pitch = score.bottom_note - (score.pitch_range // 5 + 2)
-    note_divider = rest_pitch - 2 * score.pitch_range // 5
+    if design.rests_above == 0:
+        rest_pitch = score.bottom_note - (score.pitch_range // 5 + 2)
+        note_divider = rest_pitch - 2 * score.pitch_range // 5
+    elif design.rests_above == 1:
+        rest_pitch = score.top_note + (score.pitch_range // 5 + 2)
+        note_divider = rest_pitch + 2 * score.pitch_range // 5
     # output directory
     out_path = Path(__file__).resolve().parent.parent.joinpath('output')
     out_path.mkdir(exist_ok=True)
