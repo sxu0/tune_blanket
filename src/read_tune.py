@@ -3,7 +3,7 @@ read_tune.py
 ------------
 reads melody from musicxml file and returns pitch & rhythm info.
 limitations (for now): partwise (as opposed to timewise),
-one staff per part, treble clef, single tempo/time signature,
+one staff per part, single tempo/time signature,
 less common tuplets.
 
 sources
@@ -87,10 +87,6 @@ class TrebleScore:
                     for clef in attributes.iter("clef"):
                         sign = clef.find("sign").text
                         line = clef.find("line").text
-                        if sign != "G" or line != "2":
-                            warnings.warn(
-                                "Non-treble clef scores are not yet supported."
-                            )
                 for note in measure.iter("note"):
                     for pitch in note.iter("pitch"):
                         step = pitch.find("step").text
