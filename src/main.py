@@ -17,10 +17,11 @@ if __name__ == "__main__":
     # tune_path = tune_dir.joinpath('bohemian_rhapsody_guitar_solo.musicxml')
     # tune_path = tune_dir.joinpath('twinkle_twinkle_little_star.musicxml')
     # tune_path = tune_dir.joinpath('still_got_the_blues_guitar_solo_triplet_version.musicxml')
-    tune_path = tune_dir.joinpath('sunset_road_excerpt.musicxml')
+    # tune_path = tune_dir.joinpath('sunset_road_excerpt.musicxml')
+    tune_path = tune_dir.joinpath('krommer_concerto_for_2_clarinets_excerpt.musicxml')
     melody = TrebleScore(tune_path)
     pattern = BlanketDesign()
     # fav colourmaps so far: 'viridis' (default), 'ocean', 'Purples'
     # add '_r' to end of colourmap names to reverse the colour scale
     pattern.colour_blanket('YlOrRd_r', 4)
-    compose_blanket(melody, pattern, 'sunset_road_excerpt.png')
+    compose_blanket(melody, pattern, '')
