@@ -38,10 +38,11 @@ def compose_blanket(
     score: TrebleScore, design: BlanketDesign, fig_name: str = "", debug_switch=False
 ):
     # visual magic!
-    pitches = score.pitches
-    durations = score.durations
     width = 2
-    rest_pitch = np.min(pitches) - (score.pitch_range // 5 + 2)
+    if score.no_parts == 1:
+        rest_pitch = min(score.pitches) - (score.pitch_range // 5 + 2)
+    else:
+        rest_pitch = min(min(score.pitches)) - (score.pitch_range // 5 + 2)
     note_divider = np.full(
         (width, design.divider_thickness), rest_pitch - 2 * score.pitch_range // 5
     )
@@ -49,12 +50,12 @@ def compose_blanket(
     out_path = Path(__file__).resolve().parent.parent.joinpath('output')
     out_path.mkdir(exist_ok=True)
     # tile pitches according to durations
-    for part in range(len(pitches)):
+    for part in range(score.no_parts):
         part_blanket_sections = []
-        part_pitches = pitches[part, :]
-        part_durations = durations[part, :]
-        for note in range(len(pitches[part])):
-            if pitches[part, note] != 9999:
+        part_pitches = score.pitches[part]
+        part_durations = score.durations[part]
+        for note in range(len(part_pitches)):
+            if part_pitches[note] != 9999:
                 pitch = part_pitches[note]
             else:
                 pitch = rest_pitch

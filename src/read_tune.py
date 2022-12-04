@@ -116,16 +116,20 @@ class TrebleScore:
                             part_durations.append(duration)
             self.pitches.append(part_pitches)
             self.durations.append(part_durations)
-        self.pitches = np.array(self.pitches)
-        self.durations = np.array(self.durations)
         # crop continuous rests at end of score
         (self.pitches, self.durations) = self.groom_tail()
         # verify same number of pitches and durations have been recorded
-        if np.size(self.pitches) != np.size(self.durations):
+        pitch_count, duration_count = 0, 0
+        for i in range(self.no_parts):
+            for j in range(len(self.pitches[i])):
+                pitch_count += 1
+            for j in range(len(self.durations[i])):
+                duration_count += 1
+        if pitch_count != duration_count:
             warnings.warn("Unequal numbers of pitches and durations recorded!")
             print("\t({0} note pitches/rests recorded & "\
                 "{1} note/rest durations recorded across all parts)".format(
-                    np.size(self.pitches), np.size(self.durations)
+                    pitch_count, duration_count
                 )
             )
         # calculate pitch range in number of semitones
@@ -133,7 +137,11 @@ class TrebleScore:
 
     def find_pitch_range(self):
         # finds range of pitches in number of semitones
-        pitches_sans_rests = self.pitches[self.pitches != 9999]
+        pitches_flatten = []
+        for i in range(self.no_parts):
+            pitches_flatten.extend(self.pitches[i])
+        pitches_flatten = np.array(pitches_flatten)
+        pitches_sans_rests = pitches_flatten[pitches_flatten != 9999]
         pitch_range = np.max(pitches_sans_rests) - np.min(pitches_sans_rests)
         return pitch_range
 
@@ -150,7 +158,9 @@ class TrebleScore:
                     tail_rests += 1
             tail_rests_parts.append(tail_rests)
         tail_length = min(tail_rests_parts)
-        if tail_length == 0:
-            return self.pitches, self.durations
-        else:
-            return self.pitches[:, :-tail_length], self.durations[:, :-tail_length]
+        if tail_length != 0:
+            # note: each part can have a different length!
+            for i in range(self.no_parts):
+                self.pitches[i] = self.pitches[i][:-tail_length]
+                self.durations[i] = self.durations[i][:-tail_length]
+        return self.pitches, self.durations
