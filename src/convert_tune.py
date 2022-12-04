@@ -39,10 +39,7 @@ def compose_blanket(
 ):
     # visual magic!
     width = 2
-    if score.no_parts == 1:
-        rest_pitch = min(score.pitches) - (score.pitch_range // 5 + 2)
-    else:
-        rest_pitch = min(min(score.pitches)) - (score.pitch_range // 5 + 2)
+    rest_pitch = score.bottom_note - (score.pitch_range // 5 + 2)
     note_divider = rest_pitch - 2 * score.pitch_range // 5
     # output directory
     out_path = Path(__file__).resolve().parent.parent.joinpath('output')
@@ -103,7 +100,9 @@ def compose_blanket(
         ax[i].contourf(
             blanket[i],
             int(score.pitch_range * design.colour_range_multiplier),
-            cmap=design.colour_map
+            cmap=design.colour_map,
+            vmin=min(score.bottom_note, note_divider),
+            vmax=max(score.top_note, note_divider)
         )
         ax[i].tick_params(
             axis='both', which='both',

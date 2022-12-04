@@ -133,7 +133,7 @@ class TrebleScore:
                 )
             )
         # calculate pitch range in number of semitones
-        self.pitch_range = self.find_pitch_range()
+        self.pitch_range, self.bottom_note, self.top_note = self.find_pitch_range()
 
     def find_pitch_range(self):
         # finds range of pitches in number of semitones
@@ -142,8 +142,10 @@ class TrebleScore:
             pitches_flatten.extend(self.pitches[i])
         pitches_flatten = np.array(pitches_flatten)
         pitches_sans_rests = pitches_flatten[pitches_flatten != 9999]
-        pitch_range = np.max(pitches_sans_rests) - np.min(pitches_sans_rests)
-        return pitch_range
+        lowest_pitch = np.min(pitches_sans_rests)
+        highest_pitch = np.max(pitches_sans_rests)
+        pitch_range = highest_pitch - lowest_pitch
+        return pitch_range, lowest_pitch, highest_pitch
 
     def groom_tail(self):
         # deletes empty measures at end of score
