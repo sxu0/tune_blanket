@@ -68,13 +68,13 @@ def compose_blanket(
         part_blanket = np.concatenate(part_blanket_sections, axis=1)
         # debug mode
         if debug_switch:
+            # write blanket array to txt file
             with open(out_path.joinpath('tune_blanket_part.txt'), 'w') as file_out:
                 for i in range(len(part_blanket)):
                     for j in range(len(part_blanket[i])):
                         file_out.write(str(part_blanket[i, j]) + "  ")
                     file_out.write("\n")
-        # visualize part
-        if True:
+            # visualize part
             plt.figure(figsize=design.dimensions)
             plt.contourf(
                 part_blanket,
