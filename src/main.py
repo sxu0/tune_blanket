@@ -23,5 +23,5 @@ if __name__ == "__main__":
     pattern = BlanketDesign()
     # fav colourmaps so far: 'viridis' (default), 'ocean', 'Purples'
     # add '_r' to end of colourmap names to reverse the colour scale
-    pattern.colour_blanket('YlOrRd_r', 4)
-    compose_blanket(melody, pattern, '')
+    pattern.colour_blanket('ocean', 4)
+    compose_blanket(melody, pattern, 'krommer_concerto_for_2_clarinets_excerpt.png')
