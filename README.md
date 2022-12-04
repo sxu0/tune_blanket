@@ -1,6 +1,6 @@
 # tune_blanket
 
-potentially of interest
------------------------
+references
+----------
 * matplotlib colormap choices:
 https://matplotlib.org/stable/tutorials/colors/colormaps.html
