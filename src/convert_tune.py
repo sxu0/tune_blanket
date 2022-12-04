@@ -49,6 +49,8 @@ def compose_blanket(
     # output directory
     out_path = Path(__file__).resolve().parent.parent.joinpath('output')
     out_path.mkdir(exist_ok=True)
+    # store parts
+    blanket = []
     # tile pitches according to durations
     for part in range(score.no_parts):
         part_blanket_sections = []
@@ -89,3 +91,26 @@ def compose_blanket(
             if fig_name != "":
                 plt.savefig(out_path.joinpath(fig_name), dpi=design.resolution)
             plt.show()
+        # store parts
+        blanket.append(part_blanket)
+
+    fig, ax = plt.subplots(
+        nrows=score.no_parts, ncols=1,
+        sharex=True, sharey=True,
+        figsize=design.dimensions
+    )
+    for i in range(score.no_parts):
+        ax[i].contourf(
+            blanket[i],
+            int(score.pitch_range * design.colour_range_multiplier),
+            cmap=design.colour_map
+        )
+        ax[i].tick_params(
+            axis='both', which='both',
+            left=False, bottom=False,
+            labelleft=False, labelbottom=False
+        )
+    plt.subplots_adjust(hspace=0)
+    if fig_name != "":
+        plt.savefig(out_path.joinpath(fig_name), dpi=design.resolution)
+    plt.show()
