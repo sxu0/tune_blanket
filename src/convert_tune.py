@@ -43,9 +43,7 @@ def compose_blanket(
         rest_pitch = min(score.pitches) - (score.pitch_range // 5 + 2)
     else:
         rest_pitch = min(min(score.pitches)) - (score.pitch_range // 5 + 2)
-    note_divider = np.full(
-        (width, design.divider_thickness), rest_pitch - 2 * score.pitch_range // 5
-    )
+    note_divider = rest_pitch - 2 * score.pitch_range // 5
     # output directory
     out_path = Path(__file__).resolve().parent.parent.joinpath('output')
     out_path.mkdir(exist_ok=True)
@@ -64,9 +62,11 @@ def compose_blanket(
             blanket_section = np.full(
                 (width, part_durations[note] * design.length_multiplier), pitch
             )
+            blanket_section[:, -design.divider_thickness:] = note_divider
             part_blanket_sections.append(blanket_section)
-            part_blanket_sections.append(note_divider)
-        del part_blanket_sections[-1]
+        part_blanket_sections[-1][:, -design.divider_thickness:] = (
+            blanket_section[0, -design.divider_thickness-1]
+        )
         part_blanket = np.concatenate(part_blanket_sections, axis=1)
         # debug mode
         if debug_switch:
